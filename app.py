@@ -1,3 +1,5 @@
+import base64
+import io
 import dash
 from dash import dcc
 from dash import html
@@ -10,6 +12,7 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objs as go
 import plotly.express as px
+
 
 path = 'https://raw.githubusercontent.com/KennethTrinh/DigitalAg-Hackathon/master/data/'
 
@@ -53,7 +56,57 @@ app.layout = html.Div([
                     figure=px.line(df, x='Date', y='Value', title='Month by Month Line Chart')
                 )
             ], className='box'),
-            
+
+            html.Div([
+                dcc.Upload(
+                    id='upload-data-1',
+                    children=html.Div([
+                        'Drag and Drop or ',
+                        html.A('Select Files'), 
+                        " for training"
+                    ]),
+                    style={
+                        'width': '100%',
+                        'height': '60px',
+                        'lineHeight': '60px',
+                        'borderWidth': '1px',
+                        'borderStyle': 'dashed',
+                        'borderRadius': '5px',
+                        'textAlign': 'center',
+                        'margin': '10px'
+                    },
+                    # Allow multiple files to be uploaded
+                    multiple=True
+                ),
+                html.Div(id='output-data-1-upload'),
+                dcc.Upload(
+                    id='upload-data-2',
+                    children=html.Div([
+                        'Drag and Drop or ',
+                        html.A('Select Files'),
+                        " for prediction"
+                    ]),
+                    style={
+                        'width': '100%',
+                        'height': '60px',
+                        'lineHeight': '60px',
+                        'borderWidth': '1px',
+                        'borderStyle': 'dashed',
+                        'borderRadius': '5px',
+                        'textAlign': 'center',
+                        'margin': '10px'
+                    },
+                    # Allow multiple files to be uploaded
+                    multiple=True
+                ),
+                html.Div(id='output-data-2-upload'),
+                html.Button(
+                    id='submit-button',
+                    n_clicks=0,
+                    children='Submit'
+                ),
+                html.Div(id='output-container')
+            ], className='box'),
 
         ], className='main'),
     ]),
@@ -90,6 +143,80 @@ def train_and_display(name):
     ])
     return fig
 
+
+
+
+def parse_contents(contents, filename):
+    content_type, content_string = contents.split(',')
+    decoded = base64.b64decode(content_string)
+    if 'csv' in filename:
+        # Assume the user uploaded a CSV file
+        df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+
+    return html.Div([
+        html.H5(f'File name: {filename}'),
+        html.Table(
+            # Header
+            [html.Div("Preview")] +
+
+            # Body
+            [html.Tr([
+                html.Td(df.iloc[i][col]) for col in df.columns[:10]
+            ]) for i in range(min(len(df), 3))]
+        )
+    ])
+
+@app.callback(Output('output-data-1-upload', 'children'),
+              Input('upload-data-1', 'contents'),
+              State('upload-data-1', 'filename'))
+def update_output(contents, filename):
+    if contents is not None:
+        children = [
+            parse_contents(c, n) for c, n in
+            zip(contents, filename)]
+        return children
+
+@app.callback(Output('output-data-2-upload', 'children'),
+              Input('upload-data-2', 'contents'),
+              State('upload-data-2', 'filename'))
+def update_output(contents, filename):
+    if contents is not None:
+        children = [
+            parse_contents(c, n) for c, n in
+            zip(contents, filename)]
+        return children
+
+@app.callback(
+    Output('output-container', 'children'),
+    Input('submit-button', 'n_clicks'),
+    State('upload-data-1', 'contents'),
+    State('upload-data-1', 'filename')
+)
+def update_output(n_clicks, list_of_contents, list_of_names):
+    if n_clicks > 0:
+        val = methane_lin_reg()
+        return f'The predicted grams of produced methane:  {val}.'
+    
+    if list_of_contents is not None:
+        children = [
+            parse_contents(c, n) for c, n in
+            zip(list_of_contents, list_of_names)]
+        return children
+
+
+def methane_lin_reg():
+    df1 = pd.read_csv('prediction_cow.csv')
+    X_new = df1.iloc[:, :].values
+    X_new = X_new.reshape(1, -1)
+
+
+    df = pd.read_csv('output_200cows.csv')
+    X = df.iloc[:, :-1].values
+    y = df.iloc[:, -1].values
+    reg = linear_model.LinearRegression()
+    reg.fit(X, y)
+    # X_new = [[...]]  # input data for a new cow, with 17 features
+    return float(reg.predict(X_new)[0])
 
 
 

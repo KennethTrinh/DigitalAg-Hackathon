@@ -10,6 +10,8 @@ means_header = "Mean relative abundance (%)"
 stds_header = "STD"
 
 df = pd.read_csv('methane_diff.csv', skiprows=4)
+microbes = df.iloc[:,4]
+print(microbes)
 mean_values =  df.iloc[:, 5].to_numpy().astype(float)
 std_values = df.iloc[:,6].to_numpy().astype(float)
 
@@ -37,12 +39,14 @@ def gen_data(category_means, category_stds):
   return data
           
 
-with open("output.csv", "w", newline="") as csv_file:
+with open("output_200cows.csv", "w", newline="") as csv_file:
+  csv_writer = csv.writer(csv_file)
+  csv_writer.writerow(microbes)
+
   for x in range(200):
     a = gen_data(means_a, stds_a)
     b = gen_data(means_b, stds_b)
     total_methane = 400 + microbiome_impact(a, b)
-    row = a + b + [total_methane]
-    csv_writer = csv.writer(csv_file)
+    row = [x] + a + b + [total_methane]
     csv_writer.writerow(row)
   
