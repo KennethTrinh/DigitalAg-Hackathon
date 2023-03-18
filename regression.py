@@ -11,10 +11,10 @@ def microbiome_impact(archaea_props, bacteria_props):
     bacteria_effects = np.array(
         [1.06, 6.34, -0.08, 2.51, -2.65, 0.27, 5.32, -1.52, 1.16, -2.01, 5.31, -5.9, 7.92])
 
-    archaea_props -= archaea_base
-    bacteria_props -= bacteria_base
+    archaea_props_2 = archaea_props - archaea_base
+    bacteria_props_2 = bacteria_props - bacteria_base
 
-    return np.sum(np.dot(archaea_effects, archaea_props)) + np.sum(np.dot(bacteria_effects, bacteria_props))
+    return 395.8 + np.sum(np.dot(archaea_effects, archaea_props_2)) + np.sum(np.dot(bacteria_effects, bacteria_props_2))
 
 # microbiome impact on a child's methane production
 
@@ -26,13 +26,13 @@ def microbiome_heredity_impact(archaea_props, bacteria_props):
         [0.17, 0.13, 0.07, 0.15, 0.02, 0.03, 0, 0.04, 0.03, 0.02, 0.08, 0, 0])
     
     # convert to z score
-    archaea_props -= archaea_base
-    bacteria_props -= bacteria_base
+    archaea_props_2 = archaea_props - archaea_base
+    bacteria_props_2 = bacteria_props - bacteria_base
+    
     archaea_props /= archaea_std_dev
     bacteria_props /= bacteria_std_dev
 
-    return microbiome_impact(archaea_base + np.dot(archaea_props * archaea_heredity, archaea_std_dev), bacteria_base + np.dot(bacteria_props * bacteria_heredity, bacteria_std_dev))
-
+    return microbiome_impact(archaea_base + np.dot(archaea_props_2 * archaea_heredity, archaea_std_dev), bacteria_base + np.dot(bacteria_props_2 * bacteria_heredity, bacteria_std_dev))
 
 def generate_recommendations(archaea_props, bacteria_props):
     recommendations = []
