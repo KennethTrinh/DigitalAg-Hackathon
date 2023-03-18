@@ -15,22 +15,7 @@ from consts import *
 path = 'https://raw.githubusercontent.com/KennethTrinh/DigitalAg-Hackathon/master/data/'
 
 
-n_points = 12 # one year of monthly data
-x = pd.date_range('2022-01-01', periods=n_points, freq='M')
-y = np.cumsum(np.random.randn(n_points)*10)
-df = pd.DataFrame({'Date': x, 'Value': y})
 
-layout = go.Layout(
-    title='Methane Emissions Comparison for Dairy Companies',
-    xaxis=dict(title='Month'),
-    yaxis=dict(title='Methane Emissions (tonnes)')
-)
-
-# # Define the initial data for the chart
-# initial_data = [
-#     go.Bar(x=list(range(1, 13)), y=dairy_data['Dairy Farmers of America'], name='Dairy Farmers of America')
-# ]
-# fig_compare = go.Figure(data=initial_data, layout=layout)
 
 #------------------------------------------------------ APP ------------------------------------------------------ 
 
@@ -122,16 +107,7 @@ def train_and_display(name):
     return fig
 
 
-
-
-@app.callback(
-    Output('dairy-company-output', 'children'),
-    Input('dairy-company-dropdown', 'value')
-)
-def update_dairy_company(selected_company):
-    if selected_company == 'None selected':
-        return html.Div()
-    selected_data = dairy_data[selected_company]
+def getCompanyBar():
     data = []
     for company, emissions in dairy_data.items():
         trace = go.Bar(
@@ -147,7 +123,21 @@ def update_dairy_company(selected_company):
         yaxis=dict(title='Methane Emissions (tonnes)'),
         barmode='group' # or 'stack'
     )
-    bar = go.Figure(data=data, layout=layout)
+    return go.Figure(data=data, layout=layout)
+
+def getLine():
+    n_points = 12 # one year of monthly data
+    x = pd.date_range('2022-01-01', periods=n_points, freq='M')
+    y = np.cumsum(np.random.randn(n_points)*10)
+    df = pd.DataFrame({'Date': x, 'Value': y})
+    layout = go.Layout(
+        title='Methane Emissions Comparison for Dairy Companies',
+        xaxis=dict(title='Month'),
+        yaxis=dict(title='Methane Emissions (tonnes)')
+    )
+    return px.line(df, x='Date', y='Value', title='Month by Month Line Chart')
+
+def getGauge():
     gauge_val = np.random.uniform(0, 100)
     gauge_chart = go.Figure(
         go.Indicator(
@@ -174,12 +164,26 @@ def update_dairy_company(selected_company):
         ),
         margin=dict(l=20, r=20, t=80, b=20)
     )
+    return gauge_chart
+
+@app.callback(
+    Output('dairy-company-output', 'children'),
+    Input('dairy-company-dropdown', 'value')
+)
+def update_dairy_company(selected_company):
+    if selected_company == 'None selected':
+        return html.Div()
+    selected_data = dairy_data[selected_company]
+
+    bar = getCompanyBar()
+    line = getLine()
+    gauge_chart = getGauge()
         
     return html.Div([
         dcc.Graph(id='dairy-emissions-chart', figure=bar),
         dcc.Graph(
             id='month-by-month-line-chart',
-            figure=px.line(df, x='Date', y='Value', title='Month by Month Line Chart')
+            figure=line
         ),
         dcc.Graph(
             id='gauge-chart',
@@ -187,21 +191,15 @@ def update_dairy_company(selected_company):
         )
     ], className='box')
 
-@app.callback(
-    Output('farm-company-output', 'children'),
-    Input('farm-company-dropdown', 'value')
-)
-def update_farm_company(selected_farm):
-    if selected_farm == 'None selected':
-        return html.Div()
-    selected_data = farm_data[selected_farm]
-    pie = px.pie(
+def getPie(selected_data, selected_farm):
+    return px.pie(
         values=list(selected_data.values()),
         names=list(selected_data.keys()),
         title=f"Microbial Composition for {selected_farm}",
         hole=0.5
     )
-    farm_emissions = box_plot_farm_data[ selected_farm]
+
+def getBox(farm_emissions, selected_farm):
     box_data = [
         go.Box(
             y=farm_emissions,
@@ -222,7 +220,20 @@ def update_farm_company(selected_farm):
         title='Methane Emissions for {} vs. Average Benchmark Farm'.format(selected_farm),
         yaxis=dict(title='Methane Emissions (tonnes)')
     )
-    box = go.Figure(data=box_data, layout=box_layout)
+    return go.Figure(data=box_data, layout=box_layout)
+
+@app.callback(
+    Output('farm-company-output', 'children'),
+    Input('farm-company-dropdown', 'value')
+)
+def update_farm_company(selected_farm):
+    if selected_farm == 'None selected':
+        return html.Div()
+    selected_data = farm_data[selected_farm]
+    pie = getPie(selected_data, selected_farm)
+
+    farm_emissions = box_plot_farm_data[ selected_farm]
+    box = getBox(farm_emissions, selected_farm)
     return html.Div([
         dcc.Graph(id='farm-pie-chart', figure=pie),
         dcc.Graph(id='farm-emissions-boxplot', figure=box)
