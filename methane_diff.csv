@@ -1,0 +1,22 @@
+﻿Supplemental table. Heritability estimates and effect of abundance on CH4 g/day of rumen archaea and bacteria at family taxa level,,,,,,,,,,,,,,,,,
+"A FDR Benjamini, Y., and Hochberg, Y. (1995). Controlling the false discovery rate: a practical and powerful approach to multiple testing. Journal of the Royal Statistical Society Series B 57, 289–300. ",,,,,,,,,,,,,,,,,
+*NA indicates Unclassified taxonomy,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,
+Kingdom,Phylum,Class,Order,Family,Mean relative abundance (%),STD,Heritability (h2),Standard Error (h2),T test statistic (h2),Significance P value (h2),AFDR controlled q value (h2),Effect (β),Standard Error (β),T statistic (β),Significance P value (β),Negative log10 P value (β),AFDR controlled q value (β)
+Archaea,Euryarchaeota,Halobacteria,Halobacteriales,Halobacteriaceae,1.05E-02,2.50E-02,0,0.052,0.01,0.996,0.996,84.6,83.247,1.02,0.31,0.51,0.792
+Archaea,Euryarchaeota,Methanobacteria,Methanobacteriales,Methanobacteriaceae,6.42E+01,2.25E+01,0.18,0.089,2.06,0.04,0.079,0.08,0.154,0.5,0.615,0.21,0.792
+Archaea,Euryarchaeota,Methanomicrobia,Methanosarcinales,Methanosarcinaceae,7.26E-01,1.65E+00,0.07,0.069,1.07,0.285,0.38,0.58,2.198,0.26,0.792,0.1,0.792
+Archaea,Euryarchaeota,Thermoplasmata,E2,[Methanomassiliicoccaceae],3.50E+01,2.21E+01,0.2,0.091,2.22,0.027,0.079,-0.08,0.155,-0.53,0.598,0.22,0.792
+Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,[Paraprevotellaceae],5.34E+00,1.22E+00,0.17,0.088,1.89,0.059,0.389,1.06,2.15,0.49,0.621,0.21,0.673
+Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,BS11,1.45E+00,1.14E+00,0.13,0.073,1.71,0.088,0.389,6.34,2.283,2.78,0.006,2.22,0.073
+Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Prevotellaceae,4.67E+01,1.04E+01,0.07,0.063,1.03,0.305,0.88,-0.08,0.244,-0.35,0.728,0.14,0.728
+Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,RF16,1.52E+00,8.56E-01,0.15,0.086,1.7,0.09,0.389,2.51,3.032,0.83,0.408,0.39,0.53
+Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,S24-7,3.62E+00,1.60E+00,0.02,0.056,0.3,0.766,0.996,-2.65,1.689,-1.57,0.118,0.93,0.44
+Bacteria,Bacteroidetes,Bacteroidia,Bacteroidales,Unclassified,9.81E-01,1.93E-01,0.03,0.06,0.56,0.578,0.945,0.27,0.534,0.5,0.616,0.21,0.673
+Bacteria,Fibrobacteres,Fibrobacteria,Fibrobacterales,Fibrobacteraceae,9.43E-01,6.49E-01,0,0.06,0,1,1,5.32,3.966,1.34,0.18,0.74,0.44
+Bacteria,Firmicutes,Clostridia,Clostridiales,Lachnospiraceae,5.60E+00,1.95E+00,0.04,0.075,0.57,0.57,0.945,-1.52,1.291,-1.18,0.238,0.62,0.44
+Bacteria,Firmicutes,Clostridia,Clostridiales,Ruminococcaceae,4.35E+00,1.84E+00,0.03,0.052,0.55,0.582,0.945,1.16,1.336,0.87,0.384,0.42,0.53
+Bacteria,Firmicutes,Clostridia,Clostridiales,Veillonellaceae,3.37E+00,1.49E+00,0.02,0.054,0.38,0.704,0.996,-2.01,1.669,-1.21,0.229,0.64,0.44
+Bacteria,Firmicutes,Erysipelotrichi,Erysipelotrichales,Erysipelotrichaceae,1.28E+00,5.26E-01,0.08,0.086,0.96,0.338,0.88,5.31,4.63,1.15,0.252,0.6,0.44
+Bacteria,Spirochaetes,Spirochaetes,Spirochaetales,Spirochaetaceae,1.07E+00,4.79E-01,0,0.055,0,1,1,-5.9,5.351,-1.1,0.271,0.57,0.44
+Bacteria,Tenericutes,Mollicutes,Anaeroplasmatales,Anaeroplasmataceae,7.45E-01,4.65E-01,0,0.051,0,1,1,7.92,5.567,1.42,0.155,0.81,0.44
