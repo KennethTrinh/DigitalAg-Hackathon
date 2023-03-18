@@ -1,7 +1,9 @@
 import dash
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc
+from dash import html
 from dash.dependencies import Input, Output, State
+from sklearn.model_selection import train_test_split
+from sklearn import linear_model, tree, neighbors
 import dash_daq as daq
 import dash_bootstrap_components as dbc
 import numpy as np
@@ -9,7 +11,7 @@ import pandas as pd
 import plotly.graph_objs as go
 import plotly.express as px
 
-path = 'https://raw.githubusercontent.com/InesRoque3/GroupV_project2/main/data/'
+path = 'https://raw.githubusercontent.com/KennethTrinh/DigitalAg-Hackathon/master/data/'
 
 emissions = pd.read_csv(path + "emissions_with_origin.csv")
 productions = pd.read_csv(path + "productions.csv")
@@ -89,7 +91,6 @@ fig_gemissions = fig_gemissions.update_layout({'margin' : dict(t=0, l=0, r=0, b=
                         'paper_bgcolor': '#F9F9F8',
                         'font_color':'#363535'})
 
-
 #------------------------------------------------------ APP ------------------------------------------------------ 
 
 app = dash.Dash(__name__)
@@ -107,139 +108,18 @@ app.layout = html.Div([
 
     html.Div([
         html.Div([
-            html.Div([
-                html.Label("Choose the Product's Origin:"), 
-                html.Br(),
-                html.Br(),
-                radio_ani_veg
-            ], className='box', style={'margin': '10px', 'padding-top':'15px', 'padding-bottom':'15px'}),
 
             html.Div([
-                html.Div([
+                dcc.Dropdown(
+                    id='ml-regression-x-dropdown',
+                    options=["Regression", "Decision Tree", "k-NN"],
+                    value='Decision Tree',
+                    clearable=False
+                )
+            ], className='box'),
+            dcc.Graph(id="ml-regression-x-graph"),
+        
 
-                    html.Div([   
-                        html.Label(id='title_bar'),           
-                        dcc.Graph(id='bar_fig'), 
-                        html.Div([              
-                            html.P(id='comment')
-                        ], className='box_comment'),
-                    ], className='box', style={'padding-bottom':'15px'}),
-
-                    html.Div([
-                        html.Img(src=app.get_asset_url('Food.png'), style={'width': '100%', 'position':'relative', 'opacity':'80%'}),
-                    ]),
-
-                ], style={'width': '40%'}),
-
-
-                html.Div([
-
-                    html.Div([
-                    html.Label(id='choose_product', style= {'margin': '10px'}),
-                    drop_map,
-                    ], className='box'),
-
-                    html.Div([
-                        html.Div([
-                            html.Label('Emissions measured as kg of CO2 per kg of product', style={'font-size': 'medium'}),
-                            html.Br(),
-                            html.Br(),
-                            html.Div([
-                                html.Div([
-                                    html.H4('Land use', style={'font-weight':'normal'}),
-                                    html.H3(id='land_use')
-                                ],className='box_emissions'),
-
-                                html.Div([
-                                    html.H4('Animal Feed', style={'font-weight':'normal'}),
-                                    html.H3(id='animal_feed')
-                                ],className='box_emissions'),
-                            
-                                html.Div([
-                                    html.H4('Farm', style={'font-weight':'normal'}),
-                                    html.H3(id='farm')
-                                ],className='box_emissions'),
-
-                                html.Div([
-                                    html.H4('Processing', style={'font-weight':'normal'}),
-                                    html.H3(id='processing')
-                                ],className='box_emissions'),
-                            
-                                html.Div([
-                                    html.H4('Transport', style={'font-weight':'normal'}),
-                                    html.H3(id='transport')
-                                ],className='box_emissions'),
-
-                                html.Div([
-                                    html.H4('Packaging', style={'font-weight':'normal'}),
-                                    html.H3(id='packging')
-                                ],className='box_emissions'),
-                            
-                                html.Div([
-                                    html.H4('Retail', style={'font-weight':'normal'}),
-                                    html.H3(id='retail')
-                                ],className='box_emissions'),
-                            ], style={'display': 'flex'}),
-
-                        ], className='box', style={'heigth':'10%'}),
-
-                        html.Div([ 
-                            html.Div([
-                                
-                                html.Div([
-                                    html.Br(),
-                                    html.Label(id='title_map', style={'font-size':'medium'}), 
-                                    html.Br(),
-                                    html.Label('These quantities refer to the raw material used to produce the product selected above', style={'font-size':'9px'}),
-                                ], style={'width': '70%'}),
-                                html.Div([
-
-                                ], style={'width': '5%'}),
-                                html.Div([
-                                    drop_continent, 
-                                    html.Br(),
-                                    html.Br(), 
-                                ], style={'width': '25%'}),
-                            ], className='row'),
-                            
-                            dcc.Graph(id='map', style={'position':'relative', 'top':'-50px'}), 
-
-                            html.Div([
-                                slider_map
-                            ], style={'margin-left': '15%', 'position':'relative', 'top':'-38px'}),
-                            
-                        ], className='box', style={'padding-bottom': '0px'}), 
-                    ]),
-                ], style={'width': '60%'}),           
-            ], className='row'),
-
-            html.Div([
-                html.Div([
-                    html.Label("3. Global greenhouse gas emissions from food production, in percentage", style={'font-size': 'medium'}),
-                    html.Br(),
-                    html.Label('Click on it to know more!', style={'font-size':'9px'}),
-                    html.Br(), 
-                    html.Br(), 
-                    dcc.Graph(figure=fig_gemissions)
-                ], className='box', style={'width': '40%'}), 
-                html.Div([
-                    html.Label("4. Freshwater withdrawals per kg of product, in Liters", style={'font-size': 'medium'}),
-                    html.Br(),
-                    html.Label('Click on it to know more!', style={'font-size':'9px'}),
-                    html.Br(), 
-                    html.Br(), 
-                    dcc.Graph(figure=fig_water)
-                ], className='box', style={'width': '63%'}), 
-            ], className='row'),
-
-            html.Div([
-                html.Div([
-                    html.P(['GroupV', html.Br(),'Ana Carrelha (20200631), Inês Melo (20200624), Inês Roque (20200644), Ricardo Nunes(20200611)'], style={'font-size':'12px'}),
-                ], style={'width':'60%'}), 
-                html.Div([
-                    html.P(['Sources ', html.Br(), html.A('Our World in Data', href='https://ourworldindata.org/', target='_blank'), ', ', html.A('Food and Agriculture Organization of the United Nations', href='http://www.fao.org/faostat/en/#data', target='_blank')], style={'font-size':'12px'})
-                ], style={'width':'37%'}),
-            ], className = 'footer', style={'display':'flex'}),
         ], className='main'),
     ]),
 ])
@@ -247,159 +127,41 @@ app.layout = html.Div([
 
 #------------------------------------------------------ Callbacks ------------------------------------------------------
 
+models = {'Regression': linear_model.LinearRegression,
+          'Decision Tree': tree.DecisionTreeRegressor,
+          'k-NN': neighbors.KNeighborsRegressor}
 @app.callback(
-    [
-        Output('title_bar', 'children'),
-        Output('bar_fig', 'figure'),
-        Output('comment', 'children'),
-        Output('drop_map', 'options'),
-        Output('drop_map', 'value'),
-        Output('choose_product', 'children')
-    ],
-    [
-        Input('ani_veg', 'value')
-    ], 
-)
-def bar_chart(top10_select):
+    Output("ml-regression-x-graph", "figure"), 
+    Input('ml-regression-x-dropdown', "value"))
+def train_and_display(name):
+    df = px.data.tips() # replace with your own data source
+    X = df.total_bill.values[:, None]
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, df.tip, random_state=42)
 
-    ################## Top10 Plot ##################
-    title = '1. Greenhouse emissions (kg CO2 per kg of product)'
-    df = bar_options[top10_select]
+    model = models[name]()
+    model.fit(X_train, y_train)
 
-    if top10_select==2:
-        bar_fig = dict(type='bar',
-            x=df.Total_emissions,
-            y=df["Food product"],
-            orientation='h',
-            marker_color=['#ebb36a' if x=='Animal' else '#6dbf9c' for x in df.Origin])
-    else:
-        bar_fig = dict(type='bar',
-            x=df.Total_emissions,
-            y=df["Food product"],
-            orientation='h',
-            marker_color=bar_colors[top10_select])
+    x_range = np.linspace(X.min(), X.max(), 100)
+    y_range = model.predict(x_range.reshape(-1, 1))
 
-    ################## Dropdown Bar ##################
-    if top10_select==0:
-        options_return = options_an
-        product_chosen = "2. Choose an animal product:" 
-        comment = ["Look at the beef production emissions! Each kilogram of beef produces almost 60 kg of CO2.", html.Br(), html.Br()]
-    elif top10_select==1:
-        options_return = options_veg
-        product_chosen = "2. Choose a vegetal product:" 
-        comment = ["Did you know that dark chocolate and coffee are the vegetal-based products that emit more gases?", html.Br(), html.Br()]
-    else:
-        options_return = options_total
-        product_chosen = "2. Choose an animal or vegetal product:" 
-        comment = "Check the difference between animal and vegetal-based products! Beef (top1 animal-based emitter) produces around 3 times more emissions than dark chocolate (top1 plant-based emitter)."
-
-    return title, \
-            go.Figure(data=bar_fig, layout=dict(height = 300, font_color = '#363535', paper_bgcolor='rgba(0,0,0,0)',plot_bgcolor='rgba(0,0,0,0)', margin=dict(l=20, r=20, t=30, b=20), margin_pad=10)), \
-            comment, \
-            options_return, \
-            options_return[0]['value'], \
-            product_chosen
+    fig = go.Figure([
+        go.Scatter(x=X_train.squeeze(), y=y_train, 
+                   name='train', mode='markers'),
+        go.Scatter(x=X_test.squeeze(), y=y_test, 
+                   name='test', mode='markers'),
+        go.Scatter(x=x_range, y=y_range, 
+                   name='prediction')
+    ])
+    return fig
 
 
 
-@app.callback(
-    [ 
-        Output('slider_map', 'max'),
-        Output('slider_map', 'value'),
-    ],
-    [
-        Input('drop_map', 'value')
-    ]
-)
-
-def update_slider(product):
-    year = productions[productions['Item']==product]['Year'].max()
-    return year, year
 
 
 
-@app.callback(
-    [
-        Output('land_use', 'children'),
-        Output('animal_feed', 'children'),
-        Output('farm', 'children'),
-        Output('processing', 'children'),
-        Output('transport', 'children'),
-        Output('packging', 'children'),
-        Output('retail', 'children'),
-        Output('title_map', 'children'),
-        Output('map', 'figure')
-    ],
-    [
-        Input('drop_map', 'value'),
-        Input('slider_map', 'value'), 
-        Input('drop_continent', 'value')
-    ],
-    [State("drop_map","options")]
-)
 
-def update_map(drop_map_value, year, continent, opt):
 
-    ################## Emissions datset ##################
-    
-    the_label = [x['label'] for x in opt if x['value'] == drop_map_value]
-
-    data_emissions = emissions[emissions["Food product"]==the_label[0]]
-    land_use_str = str(np.round(data_emissions["Land use change"].values[0],2))
-    animal_feed_str = str(np.round(data_emissions["Animal Feed"].values[0],2))
-    farm_str = str(np.round(data_emissions["Farm"].values[0],2))
-    processing_str = str(np.round(data_emissions["Processing"].values[0],2))
-    transport_str = str(np.round(data_emissions["Transport"].values[0],2))
-    packging_str = str(np.round(data_emissions["Packging"].values[0],2))
-    retail_str = str(np.round(data_emissions["Retail"].values[0],2))
-
-    ################## Choroplet Plot ##################
-    
-    prod1 = productions[(productions['Item']== drop_map_value) & (productions['Year']== year)]
-
-    title ='Production quantities of {}, by country'.format(prod1['Item'].unique()[0])  #font_color = '#363535',
-    data_slider = []
-    data_each_yr = dict(type='choropleth',
-                        locations = prod1['Area'],
-                        locationmode='country names',
-                        autocolorscale = False,
-                        z=np.log(prod1['Value'].astype(float)),
-                        zmin=0, 
-                        zmax = np.log(productions[productions['Item']== drop_map_value]['Value'].max()),
-                        colorscale = ["#ffe2bd", "#006837"],   
-                        marker_line_color= 'rgba(0,0,0,0)',
-                        colorbar= {'title':'Tonnes (log)'},#Tonnes in logscale
-                        colorbar_lenmode='fraction',
-                        colorbar_len=0.8,
-                        colorbar_x=1,
-                        colorbar_xanchor='left',
-                        colorbar_y=0.5,
-                        name='')
-    data_slider.append(data_each_yr)
- 
-    layout = dict(geo=dict(scope=continent,
-                            projection={'type': 'natural earth'},
-                            bgcolor= 'rgba(0,0,0,0)'),
-                    margin=dict(l=0,
-                                r=0,
-                                b=0,
-                                t=30,
-                                pad=0),
-                    paper_bgcolor='rgba(0,0,0,0)',
-                    plot_bgcolor='rgba(0,0,0,0)')
- 
-    fig_choropleth = go.Figure(data=data_slider, layout=layout)
-    fig_choropleth.update_geos(showcoastlines=False, showsubunits=False,showframe=False)
-
-    return land_use_str, \
-        animal_feed_str, \
-        farm_str, \
-        processing_str, \
-        transport_str, \
-        packging_str, \
-        retail_str, \
-        title, \
-        fig_choropleth
 
 
 if __name__ == '__main__':
