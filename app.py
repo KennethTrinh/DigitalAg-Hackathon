@@ -56,10 +56,22 @@ app.layout = html.Div([
                 value='None selected',
                 clearable=False
             ),
-
         ], className='box'),
 
-        html.Div(id='dairy-company-output', className='box'),
+        html.Div(id='dairy-company-output'),
+
+
+        html.Div([
+            html.H2(children='Farms'),
+            dcc.Dropdown(
+                id='farm-company-dropdown',
+                options=FARM_OPTIONS,
+                value='None selected',
+                clearable=False
+            ),
+        ], className='box'),
+
+        html.Div(id='farm-company-output'),
 
         ## ML Algorithm Dropdown
         html.Div([
@@ -116,7 +128,7 @@ def train_and_display(name):
     Output('dairy-company-output', 'children'),
     Input('dairy-company-dropdown', 'value')
 )
-def update_output(selected_company):
+def update_dairy_company(selected_company):
     if selected_company == 'None selected':
         return html.Div()
     selected_data = dairy_data[selected_company]
@@ -173,8 +185,48 @@ def update_output(selected_company):
             id='gauge-chart',
             figure=gauge_chart
         )
-    ])
+    ], className='box')
 
+@app.callback(
+    Output('farm-company-output', 'children'),
+    Input('farm-company-dropdown', 'value')
+)
+def update_farm_company(selected_farm):
+    if selected_farm == 'None selected':
+        return html.Div()
+    selected_data = farm_data[selected_farm]
+    pie = px.pie(
+        values=list(selected_data.values()),
+        names=list(selected_data.keys()),
+        title=f"Microbial Composition for {selected_farm}",
+        hole=0.5
+    )
+    farm_emissions = box_plot_farm_data[ selected_farm]
+    box_data = [
+        go.Box(
+            y=farm_emissions,
+            name=selected_farm,
+            boxpoints='outliers',
+            jitter=0.3,
+            pointpos=-1.8
+        ),
+        go.Box(
+            y=benchmark_data,
+            name='Average Benchmark Farm',
+            boxpoints='outliers',
+            jitter=0.3,
+            pointpos=-1.8
+        )
+    ]
+    box_layout = go.Layout(
+        title='Methane Emissions for {} vs. Average Benchmark Farm'.format(selected_farm),
+        yaxis=dict(title='Methane Emissions (tonnes)')
+    )
+    box = go.Figure(data=box_data, layout=box_layout)
+    return html.Div([
+        dcc.Graph(id='farm-pie-chart', figure=pie),
+        dcc.Graph(id='farm-emissions-boxplot', figure=box)
+    ], className='box')
 
 
 
