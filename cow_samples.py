@@ -34,7 +34,6 @@ def gen_data(category_means, category_stds):
   # Adjust the data points so they sum up to 100
   data = data / sum(data) * 100
   data = [round(d, 2) for d in data]
-
   return data
           
 
