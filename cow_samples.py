@@ -37,21 +37,13 @@ def gen_data(category_means, category_stds):
 
   return data
           
-d = []
-
-# a = [gen_data(means_a, stds_a) for x in range(200)]
-# print(a)
-for x in range(200):
-  a = gen_data(means_a, stds_a)
-  b = gen_data(means_b, stds_b)
-  total_methane = 400 + microbiome_impact(a, b)
-  d.append([a, b, total_methane])
-
-# print(d)
-
 
 with open("output.csv", "w", newline="") as csv_file:
+  for x in range(200):
+    a = gen_data(means_a, stds_a)
+    b = gen_data(means_b, stds_b)
+    total_methane = 400 + microbiome_impact(a, b)
+    row = a + b + [total_methane]
     csv_writer = csv.writer(csv_file)
-    for row in d:
-        csv_writer.writerow(row)
+    csv_writer.writerow(row)
   
