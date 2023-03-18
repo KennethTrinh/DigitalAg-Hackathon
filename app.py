@@ -13,112 +13,47 @@ import plotly.express as px
 
 path = 'https://raw.githubusercontent.com/KennethTrinh/DigitalAg-Hackathon/master/data/'
 
-emissions = pd.read_csv(path + "emissions_with_origin.csv")
-productions = pd.read_csv(path + "productions.csv")
-water = pd.read_csv(path + "water_use.csv")
-global_emissions = pd.read_csv(path + "Global_Emissions.csv")
 
-top10 = emissions.sort_values("Total_emissions")[-10:]
-top10_vegetal = emissions[emissions.Origin=='Vegetal'].sort_values("Total_emissions")[-10:]
-top8_animal = emissions[emissions.Origin=='Animal'].sort_values("Total_emissions")
+n_points = 12 # one year of monthly data
+x = pd.date_range('2022-01-01', periods=n_points, freq='M')
+y = np.cumsum(np.random.randn(n_points)*10)
+df = pd.DataFrame({'Date': x, 'Value': y})
 
-
-
-radio_ani_veg = dbc.RadioItems(
-        id='ani_veg', 
-        className='radio',
-        options=[dict(label='Animal', value=0), dict(label='Vegetal', value=1), dict(label='Total', value=2)],
-        value=2, 
-        inline=True
-    )
-
-dict_ = {'Apples':'Apples', 'Bananas':'Bananas', 'Barley':'Barley', 'Beet Sugar':'Sugar beet', 'Berries & Grapes':'Berries & Grapes', 'Brassicas':'Brassicas', 
-        'Cane Sugar':'Sugar cane', 'Cassava':'Cassava', 'Citrus Fruit':'Citrus', 'Coffee':'Coffee beans', 'Groundnuts':'Groundnuts','Maize':'Maize', 'Nuts':'Nuts', 
-        'Oatmeal':'Oats', 'Olive Oil':'Olives', 'Onions & Leeks':'Onions & Leeks','Palm Oil':'Oil palm fruit', 'Peas':'Peas', 'Potatoes':'Potatoes', 'Rapeseed Oil':'Rapeseed',
-        'Rice':'Rice', 'Root Vegetables':'Roots and tubers', 'Soymilk':'Soybeans', 'Sunflower Oil':'Sunflower seed', 'Tofu':'Soybeans','Tomatoes':'Tomatoes', 
-        'Wheat & Rye':'Wheat & Rye', 'Dark Chocolate':'Cocoa, beans', 'Milk': 'Milk', 'Eggs': 'Eggs','Poultry Meat': 'Poultry Meat', 'Pig Meat': 'Pig Meat', 
-        'Seafood (farmed)': 'Seafood (farmed)', 'Cheese': 'Cheese', 'Lamb & Mutton': 'Lamb & Mutton', 'Beef (beef herd)': 'Beef (beef herd)'}
-
-options_veg = [dict(label=key, value=dict_[key]) for key in top10_vegetal['Food product'].tolist()[::-1] if key in dict_.keys()]
-options_an = [dict(label=val, value=val) for val in top8_animal["Food product"].tolist()[::-1]]
-options_total = [dict(label=key, value=dict_[key]) for key in top10['Food product'].tolist()[::-1] if key in dict_.keys()]
-
-bar_colors = ['#ebb36a','#6dbf9c']
-bar_options = [top8_animal, top10_vegetal, top10]
-
-drop_map = dcc.Dropdown(
-        id = 'drop_map',
-        clearable=False,
-        searchable=False, 
-        style= {'margin': '4px', 'box-shadow': '0px 0px #ebb36a', 'border-color': '#ebb36a'}        
-    )
-
-drop_continent = dcc.Dropdown(
-        id = 'drop_continent',
-        clearable=False, 
-        searchable=False, 
-        options=[{'label': 'World', 'value': 'world'},
-                {'label': 'Europe', 'value': 'europe'},
-                {'label': 'Asia', 'value': 'asia'},
-                {'label': 'Africa', 'value': 'africa'},
-                {'label': 'North america', 'value': 'north america'},
-                {'label': 'South america', 'value': 'south america'}],
-        value='world', 
-        style= {'margin': '4px', 'box-shadow': '0px 0px #ebb36a', 'border-color': '#ebb36a'}
-    )
-
-slider_map = daq.Slider(
-        id = 'slider_map',
-        handleLabel={"showCurrentValue": True,"label": "Year"},
-        marks = {str(i):str(i) for i in [1990,1995,2000,2005,2010,2015]},
-        min = 1990,
-        size=450, 
-        color='#4B9072'
-    )
-
-fig_water = px.sunburst(water, path=['Origin', 'Category', 'Product'], values='Water Used', color='Category', 
-                        color_discrete_sequence = px.colors.sequential.haline_r).update_traces(hovertemplate = '%{label}<br>' + 'Water Used: %{value} L')
-
-fig_water = fig_water.update_layout({'margin' : dict(t=0, l=0, r=0, b=10),
-                        'paper_bgcolor': '#F9F9F8',
-                        'font_color':'#363535'
-                    })
-
-fig_gemissions = px.sunburst(global_emissions, path = ['Emissions', 'Group','Subgroup'], values = 'Percentage of food emissions', 
-                    color = 'Group', color_discrete_sequence = px.colors.sequential.Peach_r).update_traces(hovertemplate = '%{label}<br>' + 'Global Emissions: %{value}%', textinfo = "label + percent entry") 
-
-fig_gemissions = fig_gemissions.update_layout({'margin' : dict(t=0, l=0, r=0, b=10),
-                        'paper_bgcolor': '#F9F9F8',
-                        'font_color':'#363535'})
 
 #------------------------------------------------------ APP ------------------------------------------------------ 
 
 app = dash.Dash(__name__)
 
-server = app.server
-
 app.layout = html.Div([
 
     html.Div([
-        html.H1(children='FOOD FOOTPRINT'),
-        html.Label('We are interested in investigating the food products that have the biggest impact on environment. Here you can understand which are the products whose productions emit more greenhouse gases and associate this with each supply chain step, their worldwide productions, and the water use.', 
+        html.H1(children='Methane Emissions'),
+        html.Label('Tool for analyzing methane emissions from dairy farms', 
                     style={'color':'rgb(33 36 35)'}), 
         html.Img(src=app.get_asset_url('supply_chain.png'), style={'position': 'relative', 'width': '180%', 'left': '-83px', 'top': '-20px'}),
     ], className='side_bar'),
 
     html.Div([
         html.Div([
-
+            ## Dropdown
             html.Div([
                 dcc.Dropdown(
                     id='ml-regression-x-dropdown',
                     options=["Regression", "Decision Tree", "k-NN"],
                     value='Decision Tree',
                     clearable=False
+                ),
+                dcc.Graph(id="ml-regression-x-graph")
+            ], className='box'),
+
+            ## Line Chart
+            html.Div([
+                dcc.Graph(
+                    id='month-by-month-line-chart',
+                    figure=px.line(df, x='Date', y='Value', title='Month by Month Line Chart')
                 )
             ], className='box'),
-            dcc.Graph(id="ml-regression-x-graph"),
-        
+            
 
         ], className='main'),
     ]),
