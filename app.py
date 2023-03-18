@@ -128,14 +128,14 @@ def getCompanyBar():
 def getLine():
     n_points = 12 # one year of monthly data
     x = pd.date_range('2022-01-01', periods=n_points, freq='M')
-    y = np.cumsum(np.random.randn(n_points)*10)
-    df = pd.DataFrame({'Date': x, 'Value': y})
+    y = np.cumsum(np.random.randint(0, 50, n_points))
+    df = pd.DataFrame({'Month': x, 'Methane Emissions': y})
     layout = go.Layout(
         title='Methane Emissions Comparison for Dairy Companies',
         xaxis=dict(title='Month'),
         yaxis=dict(title='Methane Emissions (tonnes)')
     )
-    return px.line(df, x='Date', y='Value', title='Month by Month Line Chart')
+    return px.line(df, x='Month', y='Methane Emissions', title='Monthly Methane Emissions')
 
 def getGauge():
     gauge_val = np.random.uniform(0, 100)
@@ -222,6 +222,13 @@ def getBox(farm_emissions, selected_farm):
     )
     return go.Figure(data=box_data, layout=box_layout)
 
+def getGeneBar():
+    genes = ['Gene A', 'Gene B', 'Gene C', 'Gene D', 'Gene E']
+    methane_production = [2.5, 3.2, 1.8, 2.1, 2.9]
+    fig = go.Figure([go.Bar(x=genes, y=methane_production)])
+    fig.update_layout(title='Contribution of Genes to Methane Production in Cows', xaxis_title='Gene', yaxis_title='Methane Production (kg CO2e/day)')
+    return fig
+
 @app.callback(
     Output('farm-company-output', 'children'),
     Input('farm-company-dropdown', 'value')
@@ -234,9 +241,11 @@ def update_farm_company(selected_farm):
 
     farm_emissions = box_plot_farm_data[ selected_farm]
     box = getBox(farm_emissions, selected_farm)
+    bar = getGeneBar()
     return html.Div([
         dcc.Graph(id='farm-pie-chart', figure=pie),
-        dcc.Graph(id='farm-emissions-boxplot', figure=box)
+        dcc.Graph(id='farm-emissions-boxplot', figure=box),
+        dcc.Graph(id='gene-bar-chart', figure=bar)
     ], className='box')
 
 
