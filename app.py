@@ -13,6 +13,7 @@ import pandas as pd
 import plotly.graph_objs as go
 import plotly.express as px
 from consts import *
+import regression
 
 
 path = 'https://raw.githubusercontent.com/KennethTrinh/DigitalAg-Hackathon/master/data/'
@@ -30,7 +31,7 @@ app.layout = html.Div([
         html.H1(children='Methane Emissions'),
         html.Label('Tool for analyzing methane emissions from dairy farms', 
                     style={'color':'rgb(33 36 35)'}), 
-        # html.Img(src=app.get_asset_url('supply_chain.png'), style={'position': 'relative', 'width': '180%', 'left': '-83px', 'top': '-20px'}),
+        html.Img(src=app.get_asset_url('supply_chain.png'), style={'position': 'relative', 'width': '80%', 'left': '0px', 'top': '10px'}),
     ], className='side_bar'),
 
     
@@ -153,6 +154,14 @@ def update_output(contents, filename):
             zip(contents, filename)]
         return children
 
+def create_recommendation_list():
+    df1 = pd.read_csv('output_200cows.csv')
+    cow = df1.iloc[1].to_numpy()[0:17]
+    archaea_props=cow[0:4]
+    bacteria_props=cow[4:17]
+    recs = regression.generate_recommendations(archaea_props, bacteria_props)
+    return html.Ul(id='recs', children=[html.Li(i) for i in recs])
+
 @app.callback(
     Output('output-container', 'children'),
     Input('submit-button', 'n_clicks'),
@@ -164,8 +173,10 @@ def update_output(n_clicks, list_of_contents, list_of_names):
         if list_of_contents is not None:
             c1 = float(429.33333)
             c2 = float(415.6483)
-            return html.Div([html.H2("Cow 1: 429.333"), html.H2("Cow 1: 379.333")])
+            return html.Div([html.H2("Cow 1: 429.333"), html.H2("Cow 1: 379.333"), html.H5('Recommendations:'),
+                         create_recommendation_list()])
         
+
     if list_of_contents is not None:
         children = [
             parse_contents(c, n) for c, n in
