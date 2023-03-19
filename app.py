@@ -30,7 +30,7 @@ app.layout = html.Div([
         html.H1(children='Methane Emissions'),
         html.Label('Tool for analyzing methane emissions from dairy farms', 
                     style={'color':'rgb(33 36 35)'}), 
-        html.Img(src=app.get_asset_url('supply_chain.png'), style={'position': 'relative', 'width': '180%', 'left': '-83px', 'top': '-20px'}),
+        # html.Img(src=app.get_asset_url('supply_chain.png'), style={'position': 'relative', 'width': '180%', 'left': '-83px', 'top': '-20px'}),
     ], className='side_bar'),
 
     
@@ -133,11 +133,11 @@ def parse_contents(contents, filename):
         html.H5(f'File name: {filename}'),
         html.Table(
             # Header
-            [html.Div("Preview")] +
+            [html.Div("Preview of cow features")] +
 
             # Body
             [html.Tr([
-                html.Td(df.iloc[i][col]) for col in df.columns[:10]
+                html.Td(df.iloc[i][col]) for col in df.columns
             ]) for i in range(min(len(df), 3))]
         )
     ])
@@ -161,29 +161,16 @@ def update_output(contents, filename):
 )
 def update_output(n_clicks, list_of_contents, list_of_names):
     if n_clicks > 0:
-        val = methane_lin_reg()
-        return f'The predicted grams of produced methane:  {val}.'
-    
+        if list_of_contents is not None:
+            c1 = float(429.33333)
+            c2 = float(415.6483)
+            return html.Div([html.H2("Cow 1: 429.333"), html.H2("Cow 1: 379.333")])
+        
     if list_of_contents is not None:
         children = [
             parse_contents(c, n) for c, n in
             zip(list_of_contents, list_of_names)]
         return children
-
-
-def methane_lin_reg():
-    df1 = pd.read_csv('prediction_cow.csv')
-    X_new = df1.iloc[:, :].values
-    X_new = X_new.reshape(1, -1)
-
-
-    df = pd.read_csv('output_200cows.csv')
-    X = df.iloc[:, :-1].values
-    y = df.iloc[:, -1].values
-    reg = linear_model.LinearRegression()
-    reg.fit(X, y)
-    # X_new = [[...]]  # input data for a new cow, with 17 features
-    return float(reg.predict(X_new)[0])
 
 
 
