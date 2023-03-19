@@ -28,7 +28,7 @@ app = dash.Dash(__name__)
 app.layout = html.Div([
 
     html.Div([
-        html.H1(children='Methane Emissions'),
+        html.H1(children='RumGene'),
         html.Label('Tool for analyzing methane emissions from dairy farms', 
                     style={'color':'rgb(33 36 35)'}), 
         html.Img(src=app.get_asset_url('supply_chain.png'), style={'position': 'relative', 'width': '80%', 'left': '0px', 'top': '10px'}),
@@ -116,13 +116,13 @@ def getLine():
     n_points = 12 # one year of monthly data
     x = pd.date_range('2022-01-01', periods=n_points, freq='M')
     y = np.cumsum(np.random.randint(0, 50, n_points))
-    df = pd.DataFrame({'Month': x, 'Methane Emissions': y})
+    df = pd.DataFrame({'Month': x, 'Methane Emissions (tonnes)': y})
     layout = go.Layout(
         title='Methane Emissions Comparison for Dairy Companies',
         xaxis=dict(title='Month'),
         yaxis=dict(title='Methane Emissions (tonnes)')
     )
-    return px.line(df, x='Month', y='Methane Emissions', title='Monthly Methane Emissions')
+    return px.line(df, x='Month', y='Methane Emissions (tonnes)', title='Monthly Methane Emissions')
 def parse_contents(contents, filename):
     content_type, content_string = contents.split(',')
     decoded = base64.b64decode(content_string)
@@ -154,13 +154,6 @@ def update_output(contents, filename):
             zip(contents, filename)]
         return children
 
-def create_recommendation_list():
-    df1 = pd.read_csv('output_200cows.csv')
-    cow = df1.iloc[1].to_numpy()[0:17]
-    archaea_props=cow[0:4]
-    bacteria_props=cow[4:17]
-    recs = regression.generate_recommendations(archaea_props, bacteria_props)
-    return html.Ul(id='recs', children=[html.Li(i) for i in recs])
 
 @app.callback(
     Output('output-container', 'children'),
@@ -173,8 +166,7 @@ def update_output(n_clicks, list_of_contents, list_of_names):
         if list_of_contents is not None:
             c1 = float(429.33333)
             c2 = float(415.6483)
-            return html.Div([html.H2("Cow 1: 429.333"), html.H2("Cow 1: 379.333"), html.H5('Recommendations:'),
-                         create_recommendation_list()])
+            return html.Div([html.H2("Cow 1: 429.333 grams/day"), html.H2("Cow 2: 379.333 grams/day")])
         
 
     if list_of_contents is not None:
@@ -244,7 +236,7 @@ def getPie(selected_data, selected_farm):
     return px.pie(
         values=list(selected_data.values()),
         names=list(selected_data.keys()),
-        title=f"Microbial Composition for {selected_farm}",
+        title=f"Microbial Composition for {selected_farm.split(',')[0]}",
         hole=0.5
     )
 
@@ -266,7 +258,7 @@ def getBox(farm_emissions, selected_farm):
         )
     ]
     box_layout = go.Layout(
-        title='Methane Emissions for {} vs. Average Benchmark Farm'.format(selected_farm),
+        title=f"Methane Emissions for{ selected_farm.split(',')[0]} vs. Average Benchmark Farm",
         yaxis=dict(title='Methane Emissions (tonnes)')
     )
     return go.Figure(data=box_data, layout=box_layout)

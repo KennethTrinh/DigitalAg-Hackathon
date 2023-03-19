@@ -13,61 +13,61 @@ dairy_data = {
 }
 
 farm_data = {
-    'Wisconsin': {
+    '1234 Farm Road, Lodi, CA 95242': {
         'Bacteria': np.random.randint(0, 50),
         'Archaea': np.random.randint(0, 50),
         'Fungi': np.random.randint(0, 50),
         'Protozoa': np.random.randint(0, 50)
     },
-    'California': {
+    '5678 County Road 200, Ridgway, CO 81432': {
         'Bacteria': np.random.randint(0, 50),
         'Archaea': np.random.randint(0, 50),
         'Fungi': np.random.randint(0, 50),
         'Protozoa': np.random.randint(0, 50)
     },
-    'Pennsylvania': {
+    '9012 Country Lane, Dalton, GA 30721': {
         'Bacteria': np.random.randint(0, 50),
         'Archaea': np.random.randint(0, 50),
         'Fungi': np.random.randint(0, 50),
         'Protozoa': np.random.randint(0, 50)
     },
-    'New York': {
+    '3456 Farmington Road, Mocksville, NC 27028': {
         'Bacteria': np.random.randint(0, 50),
         'Archaea': np.random.randint(0, 50),
         'Fungi': np.random.randint(0, 50),
         'Protozoa': np.random.randint(0, 50)
     },
-    'Michigan': {
+    '7890 County Road 17, Adams, NY 13605': {
         'Bacteria': np.random.randint(0, 50),
         'Archaea': np.random.randint(0, 50),
         'Fungi': np.random.randint(0, 50),
         'Protozoa': np.random.randint(0, 50)
     },
-    'Minnesota': {
+    '2345 Farm-to-Market Road 123, Giddings, TX 78942': {
         'Bacteria': np.random.randint(0, 50),
         'Archaea': np.random.randint(0, 50),
         'Fungi': np.random.randint(0, 50),
         'Protozoa': np.random.randint(0, 50)
     },
-    'Iowa': {
+    '6789 Highway 89, Logan, UT 84321': {
         'Bacteria': np.random.randint(0, 50),
         'Archaea': np.random.randint(0, 50),
         'Fungi': np.random.randint(0, 50),
         'Protozoa': np.random.randint(0, 50)
     },
-    'Idaho': {
+    '3210 County Road 200, Bellevue, OH 44811': {
         'Bacteria': np.random.randint(0, 50),
         'Archaea': np.random.randint(0, 50),
         'Fungi': np.random.randint(0, 50),
         'Protozoa': np.random.randint(0, 50)
     },
-    'Washington': {
+    '9012 Route 4, Mendon, VT 05701': {
         'Bacteria': np.random.randint(0, 50),
         'Archaea': np.random.randint(0, 50),
         'Fungi': np.random.randint(0, 50),
         'Protozoa': np.random.randint(0, 50)
     },
-    'Oregon': {
+    '3456 County Road 230, La Grange, TX 78945': {
         'Bacteria': np.random.randint(0, 50),
         'Archaea': np.random.randint(0, 50),
         'Fungi': np.random.randint(0, 50),
@@ -75,16 +75,16 @@ farm_data = {
     }
 }
 box_plot_farm_data = {
-    'Wisconsin': np.random.normal(20, 5, 100),
-    'California': np.random.normal(20, 5, 100),
-    'Pennsylvania': np.random.normal(20, 5, 100),
-    'New York': np.random.normal(20, 5, 100),
-    'Michigan': np.random.normal(20, 5, 100),
-    'Minnesota': np.random.normal(20, 5, 100),
-    'Iowa': np.random.normal(20, 5, 100),
-    'Idaho': np.random.normal(20, 5, 100),
-    'Washington': np.random.normal(20, 5, 100),
-    'Oregon': np.random.normal(20, 5, 100)
+    '1234 Farm Road, Lodi, CA 95242': np.random.normal(20, 5, 100),
+    '5678 County Road 200, Ridgway, CO 81432': np.random.normal(20, 5, 100),
+    '9012 Country Lane, Dalton, GA 30721': np.random.normal(20, 5, 100),
+    '3456 Farmington Road, Mocksville, NC 27028': np.random.normal(20, 5, 100),
+    '7890 County Road 17, Adams, NY 13605': np.random.normal(20, 5, 100),
+    '2345 Farm-to-Market Road 123, Giddings, TX 78942': np.random.normal(20, 5, 100),
+    '6789 Highway 89, Logan, UT 84321': np.random.normal(20, 5, 100),
+    '3210 County Road 200, Bellevue, OH 44811': np.random.normal(20, 5, 100),
+    '9012 Route 4, Mendon, VT 05701': np.random.normal(20, 5, 100),
+    '3456 County Road 230, La Grange, TX 78945': np.random.normal(20, 5, 100)
 }
 benchmark_data = np.random.normal(30, 10, 100)
 
@@ -103,15 +103,16 @@ DAIRY_COMPANY_OPTIONS = [
 
 FARM_OPTIONS = [
     {'label': 'None selected', 'value': 'None selected'},
-    {'label': 'Wisconsin', 'value': 'Wisconsin'},
-    {'label': 'California', 'value': 'California'},
-    {'label': 'Pennsylvania', 'value': 'Pennsylvania'},
-    {'label': 'New York', 'value': 'New York'},
-    {'label': 'Michigan', 'value': 'Michigan'},
-    {'label': 'Minnesota', 'value': 'Minnesota'},
-    {'label': 'Idaho', 'value': 'Idaho'},
-    {'label': 'Washington', 'value': 'Washington'},
-    {'label': 'Oregon', 'value': 'Oregon'},
+    {'label': '1234 Farm Road, Lodi, CA 95242', 'value': '1234 Farm Road, Lodi, CA 95242'},
+    {'label': '5678 County Road 200, Ridgway, CO 81432', 'value': '5678 County Road 200, Ridgway, CO 81432'},
+    {'label': '9012 Country Lane, Dalton, GA 30721', 'value': '9012 Country Lane, Dalton, GA 30721'},
+    {'label': '3456 Farmington Road, Mocksville, NC 27028', 'value': '3456 Farmington Road, Mocksville, NC 27028'},
+    {'label': '7890 County Road 17, Adams, NY 13605', 'value': '7890 County Road 17, Adams, NY 13605'},
+    {'label': '2345 Farm-to-Market Road 123, Giddings, TX 78942', 'value': '2345 Farm-to-Market Road 123, Giddings, TX 78942'},
+    {'label': '6789 Highway 89, Logan, UT 84321', 'value': '6789 Highway 89, Logan, UT 84321'},
+    {'label': '3210 County Road 200, Bellevue, OH 44811', 'value': '3210 County Road 200, Bellevue, OH 44811'},
+    {'label': '9012 Route 4, Mendon, VT 05701', 'value': '9012 Route 4, Mendon, VT 05701'},
+    {'label': '3456 County Road 230, La Grange, TX 78945', 'value': '3456 County Road 230, La Grange, TX 78945'},
 ]
 
 RACHELS_STYLE = {
