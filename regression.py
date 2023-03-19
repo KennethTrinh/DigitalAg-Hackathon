@@ -39,30 +39,18 @@ def generate_recommendations(archaea_props, bacteria_props):
     archaea_props -= archaea_base
     bacteria_props -= bacteria_base
     if(archaea_props[1] > 0):
-        recommendations.append(
-            "Adding red seaweed to your feed can decrease the proportion of methanobacteria \
-            in the microbiome, lowering methane emissions.")
+        recommendations.append("Add red seaweed")
         
     if(archaea_props[1] > 0 or bacteria_props[2] < 0 or bacteria_props[7] < 0 or bacteria_props[6] < 0 or bacteria_props[9] < 0):
-        recommendations.append(
-            "Adding wheat to your feed can increase the proportions of methane-consuming \
-            bacteria like Veilonellaceae, Fibrobacteraceae, Lachnospiraceae, and \
-            Prevotellaceae. In addition, it can decrease the proportion of methanobacteria \
-            in the microbiome, lowering methane production.")
+        recommendations.append("Add wheat")
         
     if(archaea_props[1] > 0):
-        recommendations.append("Adding tannins to your feed can decrease the \
-            proportion of methanobacteria in the microbiome, lowering methane emissions.")
+        recommendations.append("Add tannins")
         
     if(bacteria_props[2] < 0 or bacteria_props[8] > 0):
-        recommendations.append(
-                "Adding saponins to your feed can increase the proportion of methane-consuming \
-                bacteria like Prevotellaceae in the microbiome, while decreasing \
-                the proportion of methane emitters like Ruminococcaceae.")
+        recommendations.append("Add saponins")
     
     if(bacteria_props[1] > 0 or bacteria_props[3] > 0 or bacteria_props[8] > 0):
-        recommendations.append(
-            "Adding fatty oils and starch to your feed can decrease the proportion \
-            of methane emitters like Ruminococcaceae, BS11, and RF16.")
+        recommendations.append("Add fatty oils")
         
     return recommendations

@@ -13,6 +13,7 @@ import pandas as pd
 import plotly.graph_objs as go
 import plotly.express as px
 from consts import *
+import regression
 
 
 path = 'https://raw.githubusercontent.com/KennethTrinh/DigitalAg-Hackathon/master/data/'
@@ -229,6 +230,14 @@ def update_output(contents, filename):
             zip(contents, filename)]
         return children
 
+def create_recommendation_list():
+    df1 = pd.read_csv('output_200cows.csv')
+    cow = df1.iloc[1].to_numpy()[0:17]
+    archaea_props=cow[0:4]
+    bacteria_props=cow[4:17]
+    recs = regression.generate_recommendations(archaea_props, bacteria_props)
+    return html.Ul(id='recs', children=[html.Li(i) for i in recs])
+
 @app.callback(
     Output('output-container', 'children'),
     Input('submit-button', 'n_clicks'),
@@ -238,7 +247,10 @@ def update_output(contents, filename):
 def update_output(n_clicks, list_of_contents, list_of_names):
     if n_clicks > 0:
         val = methane_lin_reg()
-        return f'The predicted grams of produced methane:  {val}.'
+        return html.Div([html.Div(f'The predicted grams of produced methane:  {val}.'),
+                         html.H5('Recommendations:'),
+                         create_recommendation_list()])
+        #return html.Div([f'The predicted grams of produced methane:  {val}.',html.Div(["e"])])
     
     if list_of_contents is not None:
         children = [
