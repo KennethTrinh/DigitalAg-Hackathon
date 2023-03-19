@@ -98,7 +98,7 @@ def getCompanyBar():
     data = []
     for company, emissions in dairy_data.items():
         trace = go.Bar(
-            x=list(range(1, 13)),
+            x=pd.date_range('2022-01-01', periods=12, freq='M'),
             y=emissions,
             name=company
         )
