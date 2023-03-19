@@ -48,57 +48,6 @@ app.layout = html.Div([
         ], className='box'),
 
         html.Div(id='dairy-company-output'),
-            html.Div([
-                dcc.Upload(
-                    id='upload-data-1',
-                    children=html.Div([
-                        'Drag and Drop or ',
-                        html.A('Select Files'), 
-                        " for training"
-                    ]),
-                    style={
-                        'width': '100%',
-                        'height': '60px',
-                        'lineHeight': '60px',
-                        'borderWidth': '1px',
-                        'borderStyle': 'dashed',
-                        'borderRadius': '5px',
-                        'textAlign': 'center',
-                        'margin': '10px'
-                    },
-                    # Allow multiple files to be uploaded
-                    multiple=True
-                ),
-                html.Div(id='output-data-1-upload'),
-                dcc.Upload(
-                    id='upload-data-2',
-                    children=html.Div([
-                        'Drag and Drop or ',
-                        html.A('Select Files'),
-                        " for prediction"
-                    ]),
-                    style={
-                        'width': '100%',
-                        'height': '60px',
-                        'lineHeight': '60px',
-                        'borderWidth': '1px',
-                        'borderStyle': 'dashed',
-                        'borderRadius': '5px',
-                        'textAlign': 'center',
-                        'margin': '10px'
-                    },
-                    # Allow multiple files to be uploaded
-                    multiple=True
-                ),
-                html.Div(id='output-data-2-upload'),
-                html.Button(
-                    id='submit-button',
-                    n_clicks=0,
-                    children='Submit'
-                ),
-                html.Div(id='output-container')
-            ], className='box'),
-
 
         html.Div([
             html.H2(children='Farms'),
@@ -112,16 +61,27 @@ app.layout = html.Div([
 
         html.Div(id='farm-company-output'),
 
-        ## ML Algorithm Dropdown
         html.Div([
-            dcc.Dropdown(
-                id='ml-regression-x-dropdown',
-                options=["Regression", "Decision Tree", "k-NN"],
-                value='Decision Tree',
-                clearable=False
-            ),
-            dcc.Graph(id="ml-regression-x-graph")
+                dcc.Upload(
+                    id='upload-data-2',
+                    children=html.Div([
+                        'Drag and Drop or ',
+                        html.A('Select Files'),
+                        " for prediction"
+                    ]),
+                    style=RACHELS_STYLE,
+                    # Allow multiple files to be uploaded
+                    multiple=True
+                ),
+                html.Div(id='output-data-2-upload'),
+                html.Button(
+                    id='submit-button',
+                    n_clicks=0,
+                    children='Submit'
+                ),
+                html.Div(id='output-container')
         ], className='box'),
+
 
         
 
@@ -132,33 +92,6 @@ app.layout = html.Div([
 
 #------------------------------------------------------ Callbacks ------------------------------------------------------
 
-models = {'Regression': linear_model.LinearRegression,
-          'Decision Tree': tree.DecisionTreeRegressor,
-          'k-NN': neighbors.KNeighborsRegressor}
-@app.callback(
-    Output("ml-regression-x-graph", "figure"), 
-    Input('ml-regression-x-dropdown', "value"))
-def train_and_display(name):
-    df = px.data.tips() # replace with your own data source
-    X = df.total_bill.values[:, None]
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, df.tip, random_state=42)
-
-    model = models[name]()
-    model.fit(X_train, y_train)
-
-    x_range = np.linspace(X.min(), X.max(), 100)
-    y_range = model.predict(x_range.reshape(-1, 1))
-
-    fig = go.Figure([
-        go.Scatter(x=X_train.squeeze(), y=y_train, 
-                   name='train', mode='markers'),
-        go.Scatter(x=X_test.squeeze(), y=y_test, 
-                   name='test', mode='markers'),
-        go.Scatter(x=x_range, y=y_range, 
-                   name='prediction')
-    ])
-    return fig
 
 
 def getCompanyBar():
@@ -210,15 +143,6 @@ def parse_contents(contents, filename):
         )
     ])
 
-@app.callback(Output('output-data-1-upload', 'children'),
-              Input('upload-data-1', 'contents'),
-              State('upload-data-1', 'filename'))
-def update_output(contents, filename):
-    if contents is not None:
-        children = [
-            parse_contents(c, n) for c, n in
-            zip(contents, filename)]
-        return children
 
 @app.callback(Output('output-data-2-upload', 'children'),
               Input('upload-data-2', 'contents'),
@@ -241,8 +165,8 @@ def create_recommendation_list():
 @app.callback(
     Output('output-container', 'children'),
     Input('submit-button', 'n_clicks'),
-    State('upload-data-1', 'contents'),
-    State('upload-data-1', 'filename')
+    State('upload-data-2', 'contents'),
+    State('upload-data-2', 'filename')
 )
 def update_output(n_clicks, list_of_contents, list_of_names):
     if n_clicks > 0:
@@ -361,13 +285,6 @@ def getBox(farm_emissions, selected_farm):
     )
     return go.Figure(data=box_data, layout=box_layout)
 
-def getGeneBar():
-    genes = ['Gene A', 'Gene B', 'Gene C', 'Gene D', 'Gene E']
-    methane_production = [2.5, 3.2, 1.8, 2.1, 2.9]
-    fig = go.Figure([go.Bar(x=genes, y=methane_production)])
-    fig.update_layout(title='Contribution of Genes to Methane Production in Cows', xaxis_title='Gene', yaxis_title='Methane Production (kg CO2e/day)')
-    return fig
-
 @app.callback(
     Output('farm-company-output', 'children'),
     Input('farm-company-dropdown', 'value')
@@ -380,11 +297,20 @@ def update_farm_company(selected_farm):
 
     farm_emissions = box_plot_farm_data[ selected_farm]
     box = getBox(farm_emissions, selected_farm)
-    bar = getGeneBar()
     return html.Div([
         dcc.Graph(id='farm-pie-chart', figure=pie),
         dcc.Graph(id='farm-emissions-boxplot', figure=box),
-        dcc.Graph(id='gene-bar-chart', figure=bar)
+        html.Div([
+            html.H2(children='Recommendations'),
+            html.Label('Based on the data you have provided, we recommend the following:'),
+            #bullet list
+            html.Ul([
+                html.Li('Increase Starch'),
+                html.Li('Add seaweed, Decrease NDF'),
+                html.Li('Add Tannins, Remove 3-NOP'),
+            ])
+
+        ])
     ], className='box')
 
 
